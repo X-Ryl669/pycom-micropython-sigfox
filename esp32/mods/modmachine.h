@@ -27,4 +27,9 @@ extern void machine_pygate_set_status(machine_pygate_states_t status);
 
 extern const mp_obj_type_t esp32_ulp_type;
 
+#if MICROPY_PY_ESP32_PCNT
+extern const mp_obj_type_t esp32_pcnt_type;
+
+void esp32_pcnt_deinit_all(void);
+#endif
 #endif

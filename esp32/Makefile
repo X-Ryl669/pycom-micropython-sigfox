@@ -14,7 +14,7 @@ ifeq ($(wildcard boards/$(BOARD)/.),)
     $(error Invalid BOARD specified)
 endif
 
-IDF_HASH=0705006
+IDF_HASH=7a510d1
 XTENSA_VERSION = "2020r3"
 
 TARGET ?= boot_app
@@ -178,27 +178,43 @@ LDFLAGS = -nostdlib -u call_user_start_cpu0 -Wl,--gc-sections -Wl,-static -Wl,--
           $(CFLAGS_XTENSA_PSRAM) \
           -Wl,-Map=$(@:.elf=.map)
 
-LIBS = -L$(ESP_IDF_COMP_PATH)/esp32/lib \
-       -L$(ESP_IDF_COMP_PATH)/esp32/ld \
+
+ESPIDFLIBS = -lapp_trace -lapp_update -u esp_app_desc -lasio -lbootloader_support -lbt -lcbor \
+             -lcoap -lconsole -lcxx -u __cxa_guard_dummy -u __cxx_fatal_exception -ldriver -lefuse \
+             -lesp-tls -lesp32 -lesp_adc_cal -lesp_common -lesp_eth -lesp_event -lesp_gdbstub -lesp_hid \
+             -lesp_http_client -lesp_http_server -lesp_https_ota -lesp_ipc -lesp_local_ctrl -lesp_netif \
+             -lesp_ringbuf -lesp_rom -lesp_serial_slave_link -lesp_system -lesp_timer -lesp_websocket_client \
+             -lmesh -lespcoredump \
+             -lexpat -lfatfs -lfreemodbus -lfreertos -Wl,--undefined=uxTopUsedPriority -lheap -lidf_test -ljsmn \
+             -ljson -llibsodium -llog -llwip -lmain -lmbedtls -lmdns -lmqtt -lnewlib -lc -lm -u newlib_include_locks_impl -u newlib_include_heap_impl -u newlib_include_syscalls_impl \
+             -lnghttp -lnvs_flash -lopenssl -lperfmon -lprotobuf-c -lprotocomm -lpthread -u pthread_include_pthread_impl -u pthread_include_pthread_cond_impl -u pthread_include_pthread_local_storage_impl \
+             -lsdmmc -lsoc -lspi_flash -lspiffs -ltcp_transport -ltcpip_adapter -lulp -lunity -lvfs \
+             -lwear_levelling -lwifi_provisioning -lwpa_supplicant -lesp_wifi -lnet80211 -lpp -lphy -lrtc -lcore -lcoexist -lxtensa /home/cyril/Perso/pycom-esp-idf/components/xtensa/esp32/libhal.a -lgcc -lstdc++
+
+LIBS = -L$(ESP_IDF_COMP_PATH)/esp32/ld \
        -L$(ESP_IDF_COMP_PATH)/esp_rom/esp32/ld \
        -L$(ESP_IDF_COMP_PATH)/esp32/ld/wifi_iram_noopt \
        -L$(ESP_IDF_COMP_PATH)/bt/lib \
        -L$(ESP_IDF_COMP_PATH)/esp32 \
-       -Lbootloader \
        -Llib \
        -L$(BUILD) \
-       -lc \
-       -lm \
-       -lgcc \
-       -lstdc++ \
-       -lnvs_flash -lesp_netif -ltcpip_adapter -llog \
-       -lspi_flash -lnvs_flash -ldriver -lesp32 -lexpat -lpthread -lesp_adc_cal \
-       -lfreertos -llwip -lnewlib -lvfs -lopenssl -lmbedtls -lwpa_supplicant \
-       -lbt -lsdmmc -lsoc -lheap -lbootloader_support \
-       -lesp_ringbuf -lefuse -lespcoredump -lapp_update \
-       -lesp_common -lesp_event -lesp_wifi -lphy -lbtdm_app -lrtc -lnet80211 \
-       -lxtensa -lpp -lcore -lmesh -lhal -lcoexist -lesp_eth -lsmartconfig -ljson -ltfmicro \
-       -lesp_timer -lesp_system -lesp_ipc
+       $(ESPIDFLIBS) \
+       -lsmartconfig -ljson -ltfmicro
+
+#       -L$(ESP_IDF_COMP_PATH)/esp32/lib \
+#       -Lbootloader \
+#       -lc \
+#       -lm \
+#       -lgcc \
+#       -lstdc++ \
+#       -lnvs_flash -lesp_netif -ltcpip_adapter -llog \
+#       -lspi_flash -lnvs_flash -ldriver -lesp32 -lexpat -lpthread -lesp_adc_cal \
+#       -lfreertos -llwip -lnewlib -lvfs -lopenssl -lmbedtls -lwpa_supplicant \
+#       -lbt -lsdmmc -lsoc -lheap -lbootloader_support \
+#       -lesp_ringbuf -lefuse -lespcoredump -lapp_update \
+#       -lesp_common -lesp_event -lesp_wifi -lphy -lbtdm_app -lrtc -lnet80211 \
+#       -lxtensa -lpp -lcore -lmesh -lhal -lcoexist -lesp_eth -lsmartconfig -ljson -ltfmicro \
+#       -lesp_timer -lesp_system -lesp_ipc
 
 ifeq ($(MOD_COAP_ENABLED), 1)
     $(info COAP Module Enabled)

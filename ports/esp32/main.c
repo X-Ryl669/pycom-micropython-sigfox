@@ -145,6 +145,10 @@ soft_reset:
 
     machine_timer_deinit_all();
 
+    #if MICROPY_PY_ESP32_PCNT
+    esp32_pcnt_deinit_all();
+    #endif
+
     #if MICROPY_PY_THREAD
     mp_thread_deinit();
     #endif
